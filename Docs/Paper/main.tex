@@ -1,0 +1,79 @@
+\documentclass{article}
+
+% Language setting
+% Replace `english' with e.g. `spanish' to change the document language
+\usepackage[english]{babel}
+
+% Set page size and margins
+% Replace `letterpaper' with`a4paper' for UK/EU standard size
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+
+% Useful packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{indentfirst}
+
+\title{Turing Machine Simulator}
+\author{Rachelle Burgos (rachelle.burgos27@myhunter.cuny.edu)}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+This Turing Machine simulator is a program written in C++ that simulates a one-tape, one-track, two-way infinite tape, deterministic Turing Machine.
+Given a file containing the Turing Machine description (otherwise known as the transition function), this program will simulate the behavior of the Turing Machine on a given input string consisting of only 0's and 1's.
+The file description contains five-tuples that describe the Turing Machine in the format
+\texttt{currentState currentTapeSymbol newState newTapeSymbol direction}.
+
+For every new configuration the Machine is on, the program will output an ID, where the format is
+If the user would like to halt the program and input a new input string for the same Turing Machine description, press \texttt{h} to be prompted for the new input.
+
+\section{How It Works}
+
+The main function reads in the input string, checks if it is valid, and prompts the user to enter a new input string if necessary. 
+It then creates an instance of the \texttt{TuringMachine} class and calls the run function to simulate the Turing Machine.
+
+The transition function is created by parsing the input file containing the Turing Machine's description and storing each line in a hash map of five-tuples. 
+The hash map representing the transition function has a key containing the current state and the current symbol. 
+Each key maps to the new state, the new tape symbol, and the direction in which to move the read/write head.
+
+In the given implementation of the Turing Machine, the tape is represented as a vector of characters, which stores the symbols on the tape in order. 
+To mock the two-way infiniteness of the tape, the data structure used to implement the tape is able to dynamically resize if the read/write head moves past either end of the allocated tape, with blank symbols \texttt{B} inserted at either end.
+
+The Turing Machine always begins at the initial state \texttt{0}.
+During the simulation, the program looks up the current state and current tape symbol in the hash map to determine the next transition. 
+The user is able to halt the program by pressing \texttt{h}, which prompts the user for a new input string for the same machine description.
+
+If there is an entry for the current state and tape symbol in the hash map, the simulator updates the current state, writes the new symbol to the tape, and moves the read/write head in the specified direction. 
+If there is no entry for the current state and tape symbol in the hash map, the simulator halts and reports that the input was not accepted by the Turing Machine. 
+If the current state is \texttt{f}, which represents the final state, the simulator halts and reports that the input was accepted by the Turing Machine.
+If the Turing Machine does not halt, it will loop on forever unless the user presses \texttt{h} or quits the program.
+
+
+\section{Compilation Instructions}
+
+\begin{itemize}
+
+    \item[--] To compile the Turing Machine simulator using the provided Makefile, type \texttt{make all}, which will produce an executable named \texttt{run.me}.
+    
+    \item[--] To run the program, type \texttt{./run.me <TM-Description>} in the terminal, where \texttt{<TM-Description>} is the file containing the description of the Turing Machine. If no file for the Machine's description is provided, the program will output an error message.
+    
+    \item[--] To clean up the object files and executable, type \texttt{make clean}.
+    
+    \item[--] If you make changes to the source code, you can recompile the program by typing \texttt{make rebuild}. 
+    This will clean up the object files in addition to recompiling the program.
+    
+\end{itemize}
+
+\section{References}
+
+In order to have the program halt properly when the user presses the \texttt{h} key, I used the function \href{https://www.flipcode.com/archives/\_kbhit\_for\_Linux.shtml}{\_kbhit()} by Morgan McGuire.
+Initially, I tried using C++ standard library functions such as \texttt{cin.peek()} and programming techniques such as threading, but neither method worked as I intended.
+Therefore, after researching different options, I decided to use \texttt{\_kbhit()} because it allowed me to detect keyboard input without having to wait for the user to press enter.
+Otherwise, all other included libraries are from the C++ standard library.
+
+\end{document}
